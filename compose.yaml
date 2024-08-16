@@ -1,0 +1,10 @@
+services:
+  mysql:
+    image: 'mysql:latest'
+    environment:
+      - 'MYSQL_DATABASE=pcs_dev'
+      - 'MYSQL_PASSWORD=1227'
+      - 'MYSQL_ROOT_PASSWORD=verysecret'
+      - 'MYSQL_USER=kyumin'
+    ports:
+      - '3306:3306'
