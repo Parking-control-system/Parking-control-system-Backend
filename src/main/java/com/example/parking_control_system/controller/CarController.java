@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
@@ -28,6 +29,7 @@ import java.util.Optional;
  */
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 public class CarController {
 
     private final CarService carService;
@@ -36,13 +38,18 @@ public class CarController {
      * 입차
      * @param carEntryRequestDto (차량 번호, 입차 시간)
      */
-    @PostMapping("/api/entry")
+    @PostMapping("/entry")
     public ResponseEntity<ApiResponse> entity(@RequestBody CarEntryRequestDto carEntryRequestDto) {
 
         String carId = carEntryRequestDto.getCarId();
         LocalDateTime entryTime = carEntryRequestDto.getEntryTime();
         String memberId = null;
+        CarType carType = carEntryRequestDto.getCarType();
 
+//        차량의 등록 여부 확인 후 존재하지 않으면 등록
+        carService.createCarIsNotFound(carId, carType);
+
+//        출차되지 않은 주차 기록이 있는지 확인
         Boolean isAlreadyParked = carService.existCarIdAndExitTimeIsNull(carId);
 
         if (isAlreadyParked) {
@@ -108,7 +115,7 @@ public class CarController {
     }
 
 
-    @PostMapping("/api/exit")
+    @PostMapping("/exit")
     public ResponseEntity<ApiResponse> exit(@RequestBody CarExitRequestDto carExitRequestDto) {
 
         String carId = carExitRequestDto.getCarId();
